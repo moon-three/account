@@ -7,8 +7,6 @@ import com.example.AccountSystem.dto.AccountDTO;
 import com.example.AccountSystem.exception.AccountException;
 import com.example.AccountSystem.repository.AccountRepository;
 import com.example.AccountSystem.repository.AccountUserRepository;
-import com.example.AccountSystem.type.AccountStatus;
-import com.example.AccountSystem.type.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.example.AccountSystem.type.AccountStatus.IN_USE;
-import static com.example.AccountSystem.type.AccountStatus.USE;
 import static com.example.AccountSystem.type.ErrorCode.MAX_ACCOUNT_PER_USER_10;
 import static com.example.AccountSystem.type.ErrorCode.USER_NOT_FOUND;
 
