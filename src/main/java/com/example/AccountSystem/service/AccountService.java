@@ -12,11 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static com.example.AccountSystem.type.AccountStatus.IN_USE;
-import static com.example.AccountSystem.type.ErrorCode.MAX_ACCOUNT_PER_USER_10;
-import static com.example.AccountSystem.type.ErrorCode.USER_NOT_FOUND;
+import static com.example.AccountSystem.type.AccountStatus.UNREGISTERED;
+import static com.example.AccountSystem.type.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class AccountService {
 
         validateCreateAccount(user);
 
-        String AccountNumber = getAccountNumber();
+        String AccountNumber = createAccountNumber();
 
         return AccountDTO.fromEntity(accountRepository.save(
                     Account.builder()
@@ -44,7 +47,7 @@ public class AccountService {
         ));
     }
 
-    private String getAccountNumber() {
+    private String createAccountNumber() {
         String accountNumber;
         do {
             accountNumber = String.valueOf(
@@ -62,4 +65,42 @@ public class AccountService {
         }
     }
 
+    @Transactional
+    public AccountDTO deleteAccount(Long userId, String accountNumber) {
+        AccountUser user = accountUserRepository.findById(userId)
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountException(ACCOUNT_NOT_FOUND));
+
+        validateDeleteAccount(user, account);
+
+        account.unregister();
+
+        accountRepository.save(account);
+
+        return AccountDTO.fromEntity(account);
+    }
+
+    private void validateDeleteAccount(AccountUser user, Account account) {
+        if(!Objects.equals(user.getId(), account.getAccountUser().getId())) {
+            throw new AccountException(USER_ACCOUNT_UN_MATCH);
+        }
+        if(account.getAccountStatus() == UNREGISTERED) {
+            throw new AccountException(ACCOUNT_ALREADY_UNREGISTERED);
+        }
+        if(account.getBalance() > 0) {
+            throw new AccountException(BALANCE_NOT_EMPTY);
+        }
+    }
+
+    public List<AccountDTO> getAccountByUserId(Long userId) {
+        AccountUser user = accountUserRepository.findById(userId)
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
+
+        List<Account> accounts = accountRepository.findByAccountUser(user);
+
+        return accounts.stream().map(AccountDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 }
