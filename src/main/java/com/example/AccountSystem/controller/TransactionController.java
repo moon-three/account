@@ -1,5 +1,6 @@
 package com.example.AccountSystem.controller;
 
+import com.example.AccountSystem.aop.AccountLock;
 import com.example.AccountSystem.dto.CancelBalance;
 import com.example.AccountSystem.dto.QueryTransactionResponse;
 import com.example.AccountSystem.dto.UseBalance;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import static java.lang.Thread.sleep;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -17,10 +20,12 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/transaction/use")
+    @AccountLock
     public UseBalance.Response useBalance(
             @RequestBody @Valid UseBalance.Request request
-    ) {
+    ) throws InterruptedException {
         try {
+            Thread.sleep(3000L);
             return UseBalance.Response.from(
                     transactionService.useBalance(
                             request.getUserId(),
@@ -39,6 +44,7 @@ public class TransactionController {
     }
 
     @PostMapping("/transaction/cancel")
+    @AccountLock
     public CancelBalance.Response cancelBalance(
             @RequestBody @Valid CancelBalance.Request request
     ) {

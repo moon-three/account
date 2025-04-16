@@ -49,9 +49,9 @@ class TransactionServiceTest {
     void successUseBalance() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
                 .accountUser(user)
@@ -114,9 +114,9 @@ class TransactionServiceTest {
     void useBalanceFailed_AccountNotFound() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(user));
@@ -137,14 +137,14 @@ class TransactionServiceTest {
     void useBalanceFailed_userUnMatch() {
         // given
         AccountUser MinSu = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        MinSu.setId(1L);
 
         AccountUser Mina = AccountUser.builder()
-                .id(2L)
                 .name("Mina")
                 .build();
+        Mina.setId(2L);
 
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(MinSu));
@@ -170,9 +170,9 @@ class TransactionServiceTest {
     void useBalanceFailed_AlreadyUnregistered() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(user));
@@ -199,9 +199,9 @@ class TransactionServiceTest {
     void useBalanceFailed_exceedAmount() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
                 .accountUser(user)
@@ -231,9 +231,9 @@ class TransactionServiceTest {
     void saveFailedUseTransaction() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
                 .accountUser(user)
@@ -273,9 +273,9 @@ class TransactionServiceTest {
     void successCancelBalance() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
                 .accountUser(user)
@@ -369,9 +369,9 @@ class TransactionServiceTest {
     void cancelBalanceFailed_CancelMustFully() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
                 .accountUser(user)
@@ -410,25 +410,25 @@ class TransactionServiceTest {
     void cancelBalanceFailed_TransactionAccountUnMatch() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
-                .id(1L)
                 .accountUser(user)
                 .accountNumber("1234567890")
                 .accountStatus(IN_USE)
                 .balance(50000L)
                 .build();
+        account.setId(1L);
 
         Account accountNotUse = Account.builder()
-                .id(2L)
                 .accountUser(user)
                 .accountNumber("1111111111")
                 .accountStatus(IN_USE)
                 .balance(10000L)
                 .build();
+        accountNotUse.setId(2L);
 
         Transaction transaction = Transaction.builder()
                 .transactionType(CANCEL)
@@ -460,9 +460,9 @@ class TransactionServiceTest {
     void saveFailedCancelTransaction() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
                 .accountUser(user)
@@ -502,17 +502,17 @@ class TransactionServiceTest {
     void successQueryTransaction() {
         // given
         AccountUser user = AccountUser.builder()
-                .id(1L)
                 .name("MinSu")
                 .build();
+        user.setId(1L);
 
         Account account = Account.builder()
-                .id(1L)
                 .accountUser(user)
                 .accountNumber("1234567890")
                 .accountStatus(IN_USE)
                 .balance(50000L)
                 .build();
+        account.setId(1L);
 
         Transaction transaction = Transaction.builder()
                 .transactionType(USE)

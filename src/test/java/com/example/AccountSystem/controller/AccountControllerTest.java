@@ -3,8 +3,8 @@ package com.example.AccountSystem.controller;
 import com.example.AccountSystem.dto.AccountDTO;
 import com.example.AccountSystem.dto.CreateAccount;
 import com.example.AccountSystem.dto.DeleteAccount;
+import com.example.AccountSystem.exception.AccountException;
 import com.example.AccountSystem.service.AccountService;
-import com.example.AccountSystem.service.RedisTestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.AccountSystem.type.ErrorCode.ACCOUNT_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -29,9 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AccountControllerTest {
     @MockitoBean
     private AccountService accountService;
-
-    @MockitoBean
-    private RedisTestService redisTestService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -115,7 +113,19 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$[1].balance").value(2000L))
                 .andExpect(jsonPath("$[2].accountNumber").value("2222222222"))
                 .andExpect(jsonPath("$[2].balance").value(3000L));
+    }
 
+    @Test
+    void failedGetAccountByUserId() throws Exception {
+        // given
+        given(accountService.getAccountByUserId(anyLong()))
+                .willThrow(new AccountException(ACCOUNT_NOT_FOUND));
+        // when
+        // then
+        mockMvc.perform(get("/account?user_id=3"))
+                .andDo(print())
+                .andExpect(jsonPath("$.errorCode").value("ACCOUNT_NOT_FOUND"))
+                .andExpect(jsonPath("$.errorMessage").value("해당 계좌를 찾을 수 없습니다."));
     }
 
 }
